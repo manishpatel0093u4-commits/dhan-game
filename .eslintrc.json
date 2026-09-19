@@ -1,0 +1,23 @@
+# DHAN GAME
+
+A virtual color trading website demo with a premium dashboard and admin controls.
+
+## Features
+- Responsive landing page
+- Color prediction game layout
+- Wallet and activity panel
+- Winning history table
+- Admin dashboard with user management summary
+- Custom DHAN GAME logo
+
+## Run locally
+
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000` in your browser.
+
+## Notes
+This project is a demo/virtual-points website for UI and gameplay concept validation. It is not a real-money trading or gambling application.
