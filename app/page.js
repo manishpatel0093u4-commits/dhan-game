@@ -9,9 +9,9 @@ const colors = [
 ];
 
 const marketStats = [
-  { label: 'Total Players', value: '18,420', note: '+5.2% today' },
-  { label: 'Volume', value: '₹48.3L', note: 'Across all rounds' },
-  { label: 'Hot Color', value: 'Violet', note: 'Strong momentum' },
+  { label: 'Players', value: '18,420', note: '+5.2% today' },
+  { label: 'Volume', value: '₹48.3L', note: 'Across rounds' },
+  { label: 'Hot Color', value: 'Violet', note: 'Strong trend' },
   { label: 'Win Rate', value: '67.4%', note: 'Last 7 days' },
 ];
 
@@ -57,8 +57,9 @@ export default function Home() {
       setTimer((prev) => {
         if (prev <= 1) {
           const winner = colors[Math.floor(Math.random() * colors.length)].name;
-          setRound((current) => current + 1);
-          setResult(`Round ${round + 1} winner: ${winner}`);
+          const nextRound = round + 1;
+          setRound(nextRound);
+          setResult(`Round #${nextRound} winner: ${winner}`);
           setLastBet(`Last result: ${winner} color`);
           return 18;
         }
@@ -76,24 +77,23 @@ export default function Home() {
 
   const handlePlaceBet = () => {
     const amount = Number(stake) || 0;
-    setWallet((prev) => prev - amount);
     const winChance = Math.random() > 0.45;
     const payout = winChance ? amount * 1.8 : 0;
-    const outcome = winChance ? 'Win' : 'Lose';
+
+    setWallet((prev) => Math.max(0, prev - amount + payout));
     setResult(
-      `${outcome}: ${winChance ? 'You won' : 'You lost'} ${winChance ? `₹${payout.toFixed(0)}` : `₹${amount}`}`
+      winChance
+        ? `You won ₹${payout.toFixed(0)} on ${selectedColor}`
+        : `You lost ₹${amount} on ${selectedColor}`
     );
     setLastBet(`${selectedColor} bet placed for ₹${amount}`);
-    if (winChance) {
-      setWallet((prev) => prev + payout);
-    }
   };
 
   return (
     <main className="page-shell">
       <header className="topbar">
         <div className="brand-wrap">
-          <img src="/logo.svg" alt="DHAN GAME logo" className="brand-logo" />
+          <img src="/logo.svg" alt="DHAN GAME Logo" className="brand-logo" />
           <div>
             <div className="brand-name">DHAN GAME</div>
             <div className="brand-tag">Color trading arena</div>
@@ -116,15 +116,15 @@ export default function Home() {
       <section className="hero" id="home">
         <div className="hero-copy">
           <span className="eyebrow">Smart color trading platform</span>
-          <h1>Play. Predict. Build your winning streak.</h1>
+          <h1>Play. Predict. Win.</h1>
           <p>
-            DHAN GAME blends fast color prediction rounds with a premium wallet experience,
-            live market pulse, and a powerful admin control panel.
+            DHAN GAME is a virtual color trading experience with live rounds, wallet tracking,
+            instant payouts, and a premium admin dashboard.
           </p>
 
           <div className="cta-row">
             <a href="#game" className="btn btn-primary large">Start Playing</a>
-            <a href="#admin" className="btn btn-light large">View Admin</a>
+            <a href="#admin" className="btn btn-light large">Admin View</a>
           </div>
 
           <div className="mini-stats">
@@ -195,6 +195,7 @@ export default function Home() {
             {colors.map((color) => (
               <button
                 key={color.name}
+                type="button"
                 className={`pick-btn ${selectedColor === color.name ? 'active' : ''}`}
                 style={{ borderColor: color.hex, background: selectedColor === color.name ? color.glow : 'transparent' }}
                 onClick={() => setSelectedColor(color.name)}
@@ -208,14 +209,14 @@ export default function Home() {
           <div className="bet-panel">
             <label>Stake Amount</label>
             <div className="stake-row">
-              <button onClick={() => setStake((prev) => Math.max(50, prev - 50))}>-</button>
+              <button type="button" onClick={() => setStake((prev) => Math.max(50, prev - 50))}>-</button>
               <input
                 type="number"
                 value={stake}
                 onChange={(e) => setStake(Number(e.target.value) || 0)}
                 min="50"
               />
-              <button onClick={() => setStake((prev) => prev + 50)}>+</button>
+              <button type="button" onClick={() => setStake((prev) => prev + 50)}>+</button>
             </div>
           </div>
 
@@ -234,7 +235,7 @@ export default function Home() {
             </div>
           </div>
 
-          <button className="btn btn-primary wide" onClick={handlePlaceBet}>Place Bet</button>
+          <button type="button" className="btn btn-primary wide" onClick={handlePlaceBet}>Place Bet</button>
           <p className="status-line">{result}</p>
         </div>
 
@@ -253,8 +254,8 @@ export default function Home() {
           </div>
 
           <div className="transaction-list">
-            {transactions.map((tx) => (
-              <div key={tx.type + tx.time} className="tx-row">
+            {transactions.map((tx, index) => (
+              <div key={`${tx.type}-${index}`} className="tx-row">
                 <div>
                   <strong>{tx.type}</strong>
                   <small>{tx.time}</small>
@@ -330,6 +331,11 @@ export default function Home() {
           </table>
         </div>
       </section>
+
+      <footer className="footer">
+        <div>© 2026 DHAN GAME</div>
+        <div>Virtual Trading Demo</div>
+      </footer>
     </main>
   );
 }
